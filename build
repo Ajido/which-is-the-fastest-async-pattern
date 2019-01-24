@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -exu -o pipefail
+cwd=$(cd $(dirname $0) && pwd)
+
+mkdir -p node
+cd node
+
+files+=(latest-v6.x/node-v6.16.0-linux-x64.tar.xz)
+files+=(latest-v8.x/node-v8.15.0-linux-x64.tar.xz)
+files+=(latest-v10.x/node-v10.15.0-linux-x64.tar.xz)
+
+for file in ${files[@]}; do
+  curl -sfL https://nodejs.org/dist/${file} -O
+  tar Jxf $(basename ${file})
+  nodelist+=(${cwd}/node/$(basename ${file} | sed s'/\.tar\.xz$//')/bin/node)
+done
+
+test ! -d v8-node && git clone https://github.com/v8/node v8-node
+cd v8-node
+./configure --build-v8-with-gn
+make -j4 node
+nodelist+=(${cwd}/node/v8-node/out/Release/node)
+
+echo ${nodelist[@]} > ${cwd}/node/nodelist
+cd ${cwd}
+
+mkdir -p deps
+cd deps
+test ! -d bluebird && git clone https://github.com/petkaantonov/bluebird
+cd bluebird
+npm install
+

@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+set -eu -o pipefail
+cwd=$(cd $(dirname $0) && pwd)
+
+nodelist=$(cat ${cwd}/node/nodelist)
+cd ${cwd}/deps/bluebird
+
+export NODE_ENV=production
+root=${cwd}/deps/bluebird/benchmark
+
+if [ "$1" = "sequential" ]; then
+  echo "Doxbee sequential"
+
+  benchpath=${root}/doxbee-sequential
+
+  bench+=(${benchpath}/callbacks-baseline.js)
+  bench+=(${benchpath}/callbacks-caolan-async-waterfall.js)
+  bench+=(${benchpath}/promises-bluebird.js)
+  bench+=(${benchpath}/generators-tj-co.js)
+  bench+=(${benchpath}/promises-bluebird-generator.js)
+  bench+=(${benchpath}/promises-then-promise.js)
+  bench+=(${benchpath}/promises-native-async-await.js)
+
+  for node in ${nodelist[@]}; do
+    ${node} ${root}/performance.js --n 10000 --t 1 ${bench[@]} --harmony
+  done
+elif [ "$1" = "parallel" ]; then
+  echo "Madeup parallel"
+
+  benchpath=${root}/madeup-parallel
+
+  bench+=(${benchpath}/callbacks-baseline.js)
+  bench+=(${benchpath}/callbacks-caolan-async-parallel.js)
+  bench+=(${benchpath}/promises-bluebird.js)
+  bench+=(${benchpath}/generators-tj-co.js)
+  bench+=(${benchpath}/promises-bluebird-generator.js)
+  bench+=(${benchpath}/promises-then-promise.js)
+  bench+=(${benchpath}/promises-native-async-await.js)
+
+  for node in ${nodelist[@]}; do
+    ${node} ${root}/performance.js --n 10000 --t 1 --p 25 ${bench[@]} --harmony
+  done
+fi
+
