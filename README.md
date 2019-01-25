@@ -1,5 +1,9 @@
 # Which is the fastest Node.js async pattern?
 
+The asynchronous processing of Node.js becomes more and more convenient, and at the same time faster, as the version is upgraded. However, its convenience and speed have a trade-off. In this repository, to what degree a trade-off occurs in each environment of Node.js is visualized using the [DoxBee benchmark](https://github.com/petkaantonov/bluebird/tree/master/benchmark). This will be a great aid to your development.
+
+## TL;DR
+
 <table>
 	<thead>
 		<tr>
