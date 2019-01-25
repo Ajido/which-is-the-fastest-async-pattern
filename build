@@ -30,4 +30,5 @@ cd deps
 test ! -d bluebird && git clone https://github.com/petkaantonov/bluebird
 cd bluebird
 npm install
+cp ${cwd}/generators-tj-co.js ./benchmark/madeup-parallel/generators-tj-co.js
 
